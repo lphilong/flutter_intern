@@ -1,5 +1,5 @@
-import '../features/auth/controllers/appController.dart';
-import '../features/auth/controllers/authController.dart';
+import '../features/auth/controllers/login_controller.dart';
+import '../features/auth/controllers/register_controller.dart';
 
-UserController userController = UserController.instance;
-AppController appController = AppController.instance;
+LoginController loginController = LoginController.instance;
+RegisterController registerController = RegisterController.instance;

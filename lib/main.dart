@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:work/src/features/auth/controllers/appController.dart';
+import 'package:work/src/features/auth/controllers/login_controller.dart';
+import 'package:work/src/features/auth/controllers/register_controller.dart';
 import 'package:work/src/features/auth/screens/auth.dart';
-import 'package:work/src/features/auth/screens/login.dart';
-import 'package:work/src/features/auth/screens/register.dart';
-import './src/constants/firebase.dart';
 import 'package:get/get.dart';
-import './src/features/auth/controllers/authController.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initialization.then((value) {
-    Get.put(UserController());
-    Get.put(AppController());
-  });
+  Get.put(LoginController());
+  Get.put(RegisterController());
   runApp(const MyApp());
 }
 
