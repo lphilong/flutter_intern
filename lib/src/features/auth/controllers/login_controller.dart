@@ -1,73 +1,97 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:work/src/features/auth/screens/auth.dart';
+import 'package:work/src/features/auth/services/auth_service.dart';
+import 'package:work/src/features/search/screens/search_screen.dart';
+import '../models/user_model.dart';
 import '../services/api_service.dart';
-import '../services/auth_service.dart';
 
 class LoginController extends GetxController {
-  static LoginController instance = Get.find();
-  var isLoading = false.obs;
+  RxBool isLoading = false.obs;
   final loginFormKey = GlobalKey<FormState>();
-  late TextEditingController email, password;
+  late TextEditingController usernameController, passwordController;
   final storage = const FlutterSecureStorage();
-
+  RxString? token;
+  UserModel? userModel;
+  RxString dropdownValue = 'zero'.obs;
   @override
   void onInit() {
-    email = TextEditingController();
-    password = TextEditingController();
+    usernameController = TextEditingController();
+    passwordController = TextEditingController();
     super.onInit();
   }
 
   @override
+  void onReady() {
+    super.onReady();
+    getUser();
+  }
+
+  @override
   void dispose() {
-    email.dispose();
-    password.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
   String? validateEmail(String? text) {
     if (text == null || text.isEmpty) {
-      return 'Email is required';
+      return emptyMessage();
     }
-    String pattern = r'\w+@\w+\.\w+';
+    /*String pattern = r'\w+@\w+\.\w+';
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(text)) {
       return 'Invalid Email';
-    }
+    }*/
     return null;
+  }
+
+  String? emptyMessage() {
+    return 'Field is required';
   }
 
   String? validatePassword(String? text) {
     if (text == null || text.isEmpty) {
-      return 'Password is required';
+      return emptyMessage();
     }
-    String pattern =
+    /* String pattern =
         r'^(?=.*?[A-Z])(?=.*?[a-z)(?=.*?[0-9)(?=.*?[!@#\$&*~]).{8,}$';
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(text)) {
       return 'Password must be at least 8 characters\nInclude an uppercase letter, number and symbol';
-    }
+    }*/
 
     return null;
   }
 
-  handleLogin() async {
+  getUser() async {
+    var scopedToken = await ApiHandler.getToken();
+    if (scopedToken != null) {
+      token?.value = scopedToken;
+      var res = await ApiHandler.get('usersInfo', scopedToken);
+      userModel = UserModel.fromJson(json.decode(res));
+    }
+  }
+
+  void login() async {
     bool isValidate = loginFormKey.currentState!.validate();
 
     if (isValidate) {
       isLoading(true);
       try {
-        var data = await AuthService.login(
-          email: email.text,
-          password: password.text,
-        );
-        if (data != null) {
-          await ApiHandler.storeToken(data["token"]);
-          loginFormKey.currentState!.save();
-          Get.to(const AuthenticationScreen());
+        var res = await AuthServices.login(
+            username: usernameController, password: passwordController);
+        var data = jsonDecode(res);
+        if (data['status'] == 401) {
+          Get.snackbar('Login Failed', data['message']);
         } else {
-          Get.snackbar('login', 'Something went wrong');
+          loginFormKey.currentState!.save();
+          await ApiHandler.storeToken(data['token']);
+          Get.snackbar('Login', 'Login success');
+          Future.delayed(const Duration(seconds: 2), () {
+            Get.to(() => const SearchScreen());
+          });
         }
       } finally {
         isLoading(false);

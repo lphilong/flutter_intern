@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import '../constants/constants.dart';
 
 TextFormField inputForm(
   String text,
@@ -25,6 +26,12 @@ TextFormField inputForm(
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
         fillColor: Colors.white.withOpacity(0.3),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(90),
+            borderSide: const BorderSide(
+              color: Pallete.gradient2,
+              width: 3,
+            )),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
             borderSide: const BorderSide(width: 0, style: BorderStyle.none))),

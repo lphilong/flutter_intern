@@ -1,4 +1,11 @@
 {
-  "cSpell.words": ["Getx", "LTRB"],
+  "cSpell.words": [
+    "firstname",
+    "Getx",
+    "lastname",
+    "LTRB",
+    "Pallete",
+    "signin"
+  ],
   "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -1,42 +1,51 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:work/src/features/auth/screens/auth.dart';
+import 'package:work/src/features/auth/services/auth_service.dart';
+import 'package:work/src/routing/routes.dart';
 import '../services/api_service.dart';
-import '../services/auth_service.dart';
 
 class RegisterController extends GetxController {
-  static RegisterController instance = Get.find();
   var isLoading = false.obs;
   final registerFormKey = GlobalKey<FormState>();
-  late TextEditingController name, email, password, confirmPassword;
+  late TextEditingController usernameController,
+      emailController,
+      passwordController,
+      confirmPasswordController,
+      firstnameController,
+      lastnameController;
   final storage = const FlutterSecureStorage();
 
   @override
   void onInit() {
-    name = TextEditingController();
-    email = TextEditingController();
-    password = TextEditingController();
-    confirmPassword = TextEditingController();
+    usernameController = TextEditingController();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+    firstnameController = TextEditingController();
+    lastnameController = TextEditingController();
     super.onInit();
   }
 
   @override
   void dispose() {
-    name.dispose();
-    email.dispose();
-    password.dispose();
-    confirmPassword.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    firstnameController.dispose();
+    lastnameController.dispose();
     super.dispose();
   }
 
   String? validateUserName(String? text) {
     if (text == null || text.isEmpty) {
-      return 'Username is required';
-    }
+      return emptyMessage();
+    } /*
     if (text.length < 4) {
       return 'Too short';
-    }
+    }*/
     return null;
   }
 
@@ -44,36 +53,48 @@ class RegisterController extends GetxController {
     if (text == null || text.isEmpty) {
       return 'Email is required';
     }
-    String pattern = r'\w+@\w+\.\w+';
+    /*String pattern = r'\w+@\w+\.\w+';
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(text)) {
       return 'Invalid Email';
-    }
+    }*/
     return null;
   }
 
   String? validatePassword(String? text) {
     if (text == null || text.isEmpty) {
-      return 'Password is required';
+      return emptyMessage();
     }
-    String pattern =
+    /* String pattern =
         r'^(?=.*?[A-Z])(?=.*?[a-z)(?=.*?[0-9)(?=.*?[!@#\$&*~]).{8,}$';
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(text)) {
       return 'Password must be at least 8 characters\nInclude an uppercase letter, number and symbol';
-    }
+    }*/
 
     return null;
   }
 
+  String? emptyMessage() {
+    return 'Field is required';
+  }
+
   String? validateConfirmedPassword(String? text) {
     if (text == null || text.isEmpty) {
-      return 'Password is required';
+      return emptyMessage();
     }
-    if (text != password.text) {
+    if (text != passwordController.text) {
       return 'password does not match!';
     }
     return null;
+  }
+
+  void clear() {
+    usernameController.clear();
+    firstnameController.clear();
+    lastnameController.clear();
+    emailController.clear();
+    passwordController.clear();
   }
 
   handleRegister() async {
@@ -82,17 +103,23 @@ class RegisterController extends GetxController {
     if (isValidate) {
       isLoading(true);
       try {
-        var data = await AuthService.register(
-            name: name.text,
-            email: email.text,
-            password: password.text,
-            confirmPassword: confirmPassword.text);
-        if (data != null) {
-          await ApiHandler.storeToken(data["token"]);
-          registerFormKey.currentState!.save();
-          Get.to(const AuthenticationScreen());
+        var res = await AuthServices.register(
+            username: usernameController,
+            password: passwordController,
+            firstName: firstnameController,
+            lastName: lastnameController,
+            email: emailController);
+        var data = jsonDecode(res);
+        if (data['status'] == 400) {
+          Get.snackbar('Register Failed', data['message']);
         } else {
-          Get.snackbar('register', 'Something went wrong');
+          await ApiHandler.storeToken(data['token']);
+          registerFormKey.currentState!.save();
+          Get.snackbar('Register', 'Register success');
+          Future.delayed(const Duration(seconds: 2), () {
+            Get.toNamed(AppRoutes.search);
+          });
+          clear();
         }
       } finally {
         isLoading(false);

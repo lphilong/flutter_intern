@@ -1,61 +1,58 @@
-import 'dart:convert';
-
-RegisterModel registerModelFromJson(String str) =>
-    RegisterModel.fromJson(json.decode(str));
-
-String registerModelToJson(RegisterModel data) => json.encode(data.toJson());
-
-class RegisterModel {
-  RegisterModel({
-    this.agencyId,
+class UserDetail {
+  UserDetail({
+    this.id,
+    this.agencyName,
     required this.username,
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.password,
     this.jobTitle,
     this.lastLoginDate,
     this.created,
     this.updated,
+    this.picUser,
   });
 
-  int? agencyId;
+  int? id;
+  String? agencyName;
   String username;
   String firstName;
   String lastName;
   String email;
-  String password;
   String? jobTitle;
   DateTime? lastLoginDate;
   DateTime? created;
   DateTime? updated;
+  String? picUser;
 
-  factory RegisterModel.fromJson(Map<String, dynamic> json) => RegisterModel(
-        agencyId: json["agency_id"],
+  factory UserDetail.fromJson(Map<String, dynamic> json) => UserDetail(
+        id: json["id"],
+        agencyName: json["agencyName"],
         username: json["username"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
+        firstName: json["firstName"],
+        lastName: json["lastName"],
         email: json["email"],
-        password: json["password"],
-        jobTitle: json["job_title"],
-        lastLoginDate: DateTime.parse(json["last_login_date"]),
+        jobTitle: json["jobTitle"],
+        lastLoginDate: DateTime.parse(json["lastLoginDate"]),
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
+        picUser: json["picUser"],
       );
 
   Map<String, dynamic> toJson() => {
-        "agency_id": agencyId,
+        "id": id,
+        "agencyName": agencyName,
         "username": username,
-        "first_name": firstName,
-        "last_name": lastName,
+        "firstName": firstName,
+        "lastName": lastName,
         "email": email,
-        "password": password,
-        "job_title": jobTitle,
-        "last_login_date":
+        "jobTitle": jobTitle,
+        "lastLoginDate":
             "${lastLoginDate?.year.toString().padLeft(4, '0')}-${lastLoginDate?.month.toString().padLeft(2, '0')}-${lastLoginDate?.day.toString().padLeft(2, '0')}",
         "created":
             "${created?.year.toString().padLeft(4, '0')}-${created?.month.toString().padLeft(2, '0')}-${created?.day.toString().padLeft(2, '0')}",
         "updated":
             "${updated?.year.toString().padLeft(4, '0')}-${updated?.month.toString().padLeft(2, '0')}-${updated?.day.toString().padLeft(2, '0')}",
+        "picUser": picUser,
       };
 }

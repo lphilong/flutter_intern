@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:work/src/features/auth/controllers/login_controller.dart';
+import 'package:work/src/features/search/screens/search_screen.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends GetView<LoginController> {
   const CustomDrawer({
     Key? key,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -42,15 +44,21 @@ class CustomDrawer extends StatelessWidget {
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text("Katie Hoang",
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  controller.userModel != null
+                                      ? '${controller.userModel!.data.lastName}${" "}${controller.userModel!.data.firstName}'
+                                      : 'Name',
+                                  style: const TextStyle(
                                       fontSize: 20, color: Colors.black)),
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
-                              Text("uxdesigner@demo.vn",
-                                  style: TextStyle(
+                              Text(
+                                  controller.userModel != null
+                                      ? controller.userModel!.data.email
+                                      : 'Email',
+                                  style: const TextStyle(
                                       fontSize: 15, color: Colors.black)),
                             ],
                           )
@@ -79,7 +87,9 @@ class CustomDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("Search"),
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => const SearchScreen());
+                  },
                 ),
               ],
             ),
@@ -123,9 +133,7 @@ class CustomDrawer extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('LogOut'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () {},
             ),
           ],
         ),

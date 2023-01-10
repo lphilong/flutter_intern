@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:work/src/utils/colors.dart';
+import 'package:work/src/common_widgets/gradient_btn.dart';
+import 'package:work/src/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:work/src/common_widgets/custom_submit-btn.dart';
-import 'package:work/src/common_widgets/custom_textfield.dart';
-import 'package:work/src/constants/controllers.dart';
+import 'package:work/src/common_widgets/custom_authInput.dart';
+import 'package:work/src/features/auth/controllers/login_controller.dart';
 
-class Login extends StatelessWidget {
+class Login extends GetView<LoginController> {
   const Login({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class Login extends StatelessWidget {
           ),
         ),
         body: Container(
-          decoration: BoxDecoration(color: hexStringToColor("eed5b7")),
+          decoration: const BoxDecoration(color: Pallete.backgroundColor),
           child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
             child: ConstrainedBox(
@@ -30,7 +30,7 @@ class Login extends StatelessWidget {
               ),
               child: IntrinsicHeight(
                 child: Form(
-                  key: loginController.loginFormKey,
+                  key: controller.loginFormKey,
                   child: Container(
                     margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Column(
@@ -40,8 +40,8 @@ class Login extends StatelessWidget {
                               "Enter Email",
                               Icons.mail_outline,
                               false,
-                              loginController.email,
-                              loginController.validateEmail),
+                              controller.usernameController,
+                              controller.validateEmail),
                           const SizedBox(
                             height: 30,
                           ),
@@ -49,17 +49,19 @@ class Login extends StatelessWidget {
                               "Enter Password",
                               Icons.lock_outline,
                               true,
-                              loginController.password,
-                              loginController.validatePassword),
+                              controller.passwordController,
+                              controller.validatePassword),
                           const SizedBox(
                             height: 30,
                           ),
-                          Obx((() => loginController.isLoading.value == true
+                          Obx((() => controller.isLoading.value == true
                               ? const Center(child: CircularProgressIndicator())
                               : const Text(""))),
-                          submitBtn(context, true, () {
-                            loginController.handleLogin();
-                          }),
+                          GradientButton(
+                              onTap: () {
+                                controller.login();
+                              },
+                              text: 'Login')
                         ]),
                   ),
                 ),
